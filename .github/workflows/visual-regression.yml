@@ -1,0 +1,75 @@
+name: Visual Regression Tests (QA)
+
+on:
+  push:
+    branches: [ QA ]
+  pull_request:
+    branches: [ QA ]
+
+jobs:
+  visual-tests:
+    runs-on: windows-latest
+
+    steps:
+      # ------------------------
+      # 1. Checkout repo
+      # ------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------
+      # 2. Setup Node.js
+      # ------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # ------------------------
+      # 3. Install dependencies
+      # ------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # ------------------------
+      # 4. Install ONLY Chromium
+      # ------------------------
+      - name: Install Chromium Browser
+        run: npx playwright install chromium
+
+      # ------------------------
+      # 5. Cleanup old actual/diff
+      # ------------------------
+      - name: Cleanup visual-actual & visual-diff
+        shell: pwsh
+        run: |
+          if (Test-Path visual-actual) { Remove-Item visual-actual -Recurse -Force }
+          if (Test-Path visual-diff) { Remove-Item visual-diff -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path visual-actual
+          New-Item -ItemType Directory -Force -Path visual-diff
+
+      # ------------------------
+      # 6. Run Playwright tests ONLY in Chromium
+      # ------------------------
+      - name: Run Playwright tests (Chromium only)
+        run: npx playwright test --project=chromium --reporter=list,junit --output=test-results
+
+      # ------------------------
+      # 7. Upload test results
+      # ------------------------
+      - name: Upload test results (JUnit XML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: test-results/results.xml
+
+      # ------------------------
+      # 8. Upload visual diffs
+      # ------------------------
+      - name: Upload visual diffs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff
+          path: visual-diff/
