@@ -56,7 +56,7 @@ jobs:
       # 6. Run Playwright tests
       # ------------------------
       - name: Run Playwright tests
-        run: npx playwright test --reporter=list,junit --output=test-results
+        run: npx playwright test --project=chromium --reporter=list,junit --output=test-results
 
       # ------------------------
       # 7. Upload test results
