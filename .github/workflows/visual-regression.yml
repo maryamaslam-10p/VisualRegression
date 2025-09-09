@@ -12,10 +12,15 @@ jobs:
 
     steps:
       # ------------------------
-      # 1. Checkout repo
+      # 1. Checkout repo with Git LFS
       # ------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true   # ✅ Pull Git LFS files (PNG baselines)
+
+      - name: Setup Git LFS
+        run: git lfs pull   # ✅ Safety net to ensure PNGs are fetched
 
       # ------------------------
       # 2. Setup Node.js
@@ -32,16 +37,15 @@ jobs:
         run: npm ci
 
       # ------------------------
-      # 4. Install ONLY Chromium
+      # 4. Install Playwright (Chromium only)
       # ------------------------
-      - name: Install Chromium Browser
-        run: npx playwright install chromium
+      - name: Install Playwright (Chromium only)
+        run: npx playwright install chromium --with-deps
 
       # ------------------------
       # 5. Cleanup old actual/diff
       # ------------------------
       - name: Cleanup visual-actual & visual-diff
-        shell: pwsh
         run: |
           if (Test-Path visual-actual) { Remove-Item visual-actual -Recurse -Force }
           if (Test-Path visual-diff) { Remove-Item visual-diff -Recurse -Force }
@@ -49,10 +53,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path visual-diff
 
       # ------------------------
-      # 6. Run Playwright tests ONLY in Chromium
+      # 6. Run Playwright tests
       # ------------------------
-      - name: Run Playwright tests (Chromium only)
-        run: npx playwright test --project=chromium --reporter=list,junit --output=test-results
+      - name: Run Playwright tests
+        run: npx playwright test --reporter=list,junit --output=test-results
 
       # ------------------------
       # 7. Upload test results
@@ -73,3 +77,13 @@ jobs:
         with:
           name: visual-diff
           path: visual-diff/
+
+      # ------------------------
+      # 9. Upload actual screenshots (debugging help)
+      # ------------------------
+      - name: Upload actual screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-actual
+          path: visual-actual/
