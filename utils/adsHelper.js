@@ -2,36 +2,33 @@
 import fs from "fs";
 import path from "path";
 import { compareImages } from "./pixelmatchHelper.js";
-import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; // ✅ centralized paths
+import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; // centralized paths
 
 function sanitizeFileName(url) {
-  return url
-    .replace(/(^\w+:|^)\/\//, "")
-    .replace(/[^\w.-]/g, "_");
+  return url.replace(/(^\w+:|^)\/\//, "").replace(/[^\w.-]/g, "_");
 }
 
-// ✅ Mask ads (white overlay)
+// ✅ Mask ads before screenshot
 async function maskAds(page) {
   await page.evaluate(() => {
     const adSelectors = ["iframe", ".ad", "#ad", ".adsbygoogle", "[id*='google_ads']"];
     adSelectors.forEach((selector) => {
       document.querySelectorAll(selector).forEach((el) => {
         const rect = el.getBoundingClientRect();
-        const div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.left = rect.left + window.scrollX + "px";
-        div.style.top = rect.top + window.scrollY + "px";
-        div.style.width = rect.width + "px";
-        div.style.height = rect.height + "px";
-        div.style.background = "white";
-        div.style.zIndex = "999999";
-        document.body.appendChild(div);
+        const overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.left = rect.left + window.scrollX + "px";
+        overlay.style.top = rect.top + window.scrollY + "px";
+        overlay.style.width = rect.width + "px";
+        overlay.style.height = rect.height + "px";
+        overlay.style.background = "white";
+        overlay.style.zIndex = "999999";
+        document.body.appendChild(overlay);
       });
     });
   });
 }
 
-// ✅ Wait for ads to load before taking screenshot
 async function waitForAds(page, timeout = 8000) {
   try {
     await page.waitForSelector("iframe, .adsbygoogle, [id*='google_ads']", { timeout });
@@ -41,7 +38,6 @@ async function waitForAds(page, timeout = 8000) {
   }
 }
 
-// ✅ Capture screenshot & compare (ads masking optional)
 export async function captureAndCompareAds(page, url, testName, ignoreAds = false) {
   const safeName = sanitizeFileName(url);
   const actualPath = path.join(ACTUAL_DIR, `${testName}-${safeName}.png`);
@@ -50,16 +46,19 @@ export async function captureAndCompareAds(page, url, testName, ignoreAds = fals
 
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
 
-  // ⚡ Ensure ads (if any) are visible before screenshot
+  // ⚡ Always wait for ads (so mask has effect)
   await waitForAds(page, 8000);
 
   if (ignoreAds) await maskAds(page);
 
-  // Screenshot viewport (stable size)
-  const actualBuffer = await page.screenshot({ fullPage: false });
+  // ✅ Fixed: always same viewport screenshot (no padding mismatch)
+  const actualBuffer = await page.screenshot({
+    fullPage: false,
+    clip: { x: 0, y: 0, width: page.viewportSize().width, height: page.viewportSize().height }
+  });
   fs.writeFileSync(actualPath, actualBuffer);
 
-  // First run → save baseline
+  // First run → baseline = masked (if ignoreAds is true)
   if (!fs.existsSync(baselinePath)) {
     fs.writeFileSync(baselinePath, actualBuffer);
     return { isFirstRun: true, mismatch: 0, mismatchPercent: 0 };
@@ -67,15 +66,11 @@ export async function captureAndCompareAds(page, url, testName, ignoreAds = fals
 
   // Compare with baseline
   const baselineBuffer = fs.readFileSync(baselinePath);
-  const { mismatch, mismatchPercent } = compareImages(
-    baselineBuffer,
-    actualBuffer,
-    diffPath
-  );
+  const { mismatch, mismatchPercent } = compareImages(baselineBuffer, actualBuffer, diffPath);
 
   console.log(
-  `[adsHelper] ${testName} → mismatch=${mismatch} (${mismatchPercent.toFixed(2)}%)`
-);
+    `[adsHelper] ${testName} → mismatch=${mismatch} (${mismatchPercent.toFixed(2)}%)`
+  );
 
   return { isFirstRun: false, mismatch, mismatchPercent };
 }
