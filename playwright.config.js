@@ -14,8 +14,8 @@ export default defineConfig({
     {
       name: 'Edge',
       use: {
-        ...devices['Desktop Edge'], // 👈 use built-in Edge device
-        channel: 'msedge',          // 👈 tells Playwright to launch Microsoft Edge
+        ...devices['Desktop Edge'], 
+        channel: 'msedge',          
       },
     },
     {

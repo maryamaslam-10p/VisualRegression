@@ -1,9 +1,8 @@
-// tests/visual-regression.spec.js
 import { test, expect } from "@playwright/test";
 import { captureAndCompareAds } from "../utils/adsHelper.js";
 import { captureScreenshot, compareWithBaseline, baselineExists,} from "../utils/viewportHelper.js";
 import { captureAndCompareComponent } from "../utils/buttonComponentHelper.js";
-import { generateVisualTests } from "../utils/throttlingHelper.js";
+import { generateVisualTests } from "../utils/networkThrottlingHelper.js";
 
 const W3_URL_ADS = "https://www.w3schools.com/html/default.asp";
 const PASS_THRESHOLD_PERCENT = 1.0; // ✅ standard threshold for all tests
