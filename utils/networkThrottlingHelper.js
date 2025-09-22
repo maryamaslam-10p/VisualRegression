@@ -1,4 +1,3 @@
-// utils/networksHandlingHelper.js
 import fs from "fs";
 import { compareImages } from "./pixelmatchHelper.js";
 import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js";
