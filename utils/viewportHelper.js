@@ -1,4 +1,3 @@
-// utils/visualHelper.js
 import fs from "fs";
 import { PNG } from "pngjs";
 import path from "path";

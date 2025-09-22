@@ -50,7 +50,7 @@ test.describe("Visual Regression - Desktop vs Tablet", () => {
     await page.goto("https://www.w3schools.com/css/default.asp", { waitUntil: "domcontentloaded",});
 
     const BASELINE_VIEWPORT = { width: 1280, height: 720 }; // desktop baseline
-    const TABLET_VIEWPORT = { width: 400, height: 900 }; // tablet
+    const TABLET_VIEWPORT = { width: 768, height: 1024 }; // tablet
     const TEST_NAME = "homepage-desktop-baseline";
 
     // First run → desktop baseline

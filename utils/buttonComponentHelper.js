@@ -1,8 +1,7 @@
-// utils/componentHelper.js
 import fs from "fs-extra";
 import { PNG } from "pngjs";
 import { compareImages } from "./pixelmatchHelper.js";
-import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js";  // ✅ centralized paths
+import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; 
 
 // Helper: put an image on a bigger canvas if needed
 function placeOnCanvas(img, width, height) {

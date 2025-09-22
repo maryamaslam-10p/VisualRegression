@@ -1,4 +1,3 @@
-// utils/pixelmatchHelper.js
 import fs from "fs";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";

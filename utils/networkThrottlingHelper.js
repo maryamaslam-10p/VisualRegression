@@ -118,10 +118,7 @@ export function generateVisualTests(test, expect, passThresholdPercent = 1.0) {
         );
 
         console.log(
-          `📸 Visual regression checked [${profile}] → mismatch=${mismatch} (${mismatchPercent.toFixed(
-            2
-          )}%)`
-        );
+          `📸 Visual regression checked [${profile}] → mismatch=${mismatch} (${mismatchPercent.toFixed(2)}%)`);
 
         expect(mismatchPercent).toBeLessThanOrEqual(passThresholdPercent);
       });

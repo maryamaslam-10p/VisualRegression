@@ -1,4 +1,3 @@
-// utils/visualConfig.js
 import path from "path";
 import fs from "fs-extra";
 

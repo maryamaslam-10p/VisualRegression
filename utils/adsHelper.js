@@ -1,8 +1,7 @@
-// utils/adsHelper.js
 import fs from "fs";
 import path from "path";
 import { compareImages } from "./pixelmatchHelper.js";
-import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; // centralized paths
+import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; 
 
 function sanitizeFileName(url) {
   return url.replace(/(^\w+:|^)\/\//, "").replace(/[^\w.-]/g, "_");
