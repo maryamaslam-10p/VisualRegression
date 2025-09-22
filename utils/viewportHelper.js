@@ -1,8 +1,8 @@
 import fs from "fs";
 import { PNG } from "pngjs";
 import path from "path";
-import { compareImages } from "./pixelmatchHelper.js";   // ✅ centralized comparison
-import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; // ✅ centralized paths
+import { compareImages } from "./pixelmatchHelper.js";   
+import { BASELINE_DIR, ACTUAL_DIR, DIFF_DIR } from "./directoriesHelper.js"; 
 
 /**
  * Capture a screenshot for a given viewport
