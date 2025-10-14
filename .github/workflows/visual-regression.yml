@@ -11,9 +11,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # ------------------------
+      # ------------------------------
       # 1. Checkout repo with Git LFS
-      # ------------------------
+      # ------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -36,15 +36,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ------------------------
+      # --------------------------------------
       # 4. Install Playwright (Chromium only)
-      # ------------------------
+      # --------------------------------------
       - name: Install Playwright (Chromium only)
         run: npx playwright install chromium --with-deps
 
-      # ------------------------
+      # ----------------------------
       # 5. Cleanup old actual/diff
-      # ------------------------
+      # ----------------------------
       - name: Cleanup visual-actual & visual-diff
         run: |
           if (Test-Path visual-actual) { Remove-Item visual-actual -Recurse -Force }
@@ -78,9 +78,9 @@ jobs:
           name: visual-diff
           path: visual-diff/
 
-      # ------------------------
-      # 9. Upload actual screenshots (debugging help)
-      # ------------------------
+      # -----------------------------
+      # 9. Upload actual screenshots 
+      # -----------------------------
       - name: Upload actual screenshots
         if: always()
         uses: actions/upload-artifact@v4
